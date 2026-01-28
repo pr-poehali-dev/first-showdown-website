@@ -107,7 +107,10 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in-up': 'fade-in-up 0.4s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out',
-				'pulse-glow': 'pulse-glow 2s ease-in-out infinite'
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'float': 'float 6s ease-in-out infinite',
+				'breathe': 'breathe 4s ease-in-out infinite',
+				'glass-sweep': 'glass-sweep 8s infinite'
 			}
 		}
 	},

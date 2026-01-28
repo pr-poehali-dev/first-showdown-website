@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -75,17 +75,43 @@ export default function Index() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 
+  useEffect(() => {
+    const cursorGlow = document.createElement('div');
+    cursorGlow.id = 'cursor-glow';
+    document.body.appendChild(cursorGlow);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      cursorGlow.style.left = `${e.clientX}px`;
+      cursorGlow.style.top = `${e.clientY}px`;
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      cursorGlow.remove();
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-background grain scan-lines">
-      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-destructive/5 pointer-events-none" />
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-destructive/5 pointer-events-none animate-[float_20s_ease-in-out_infinite]" />
       
       <div className="relative z-10">
+        <div className="flex justify-center py-8">
+          <img 
+            src="https://cdn.poehali.dev/projects/88066814-aab4-4edc-be07-3cb757ba1710/bucket/4cd66419-0787-4c94-9056-8b4c6f7ed48f.png" 
+            alt="FIRST SHOWDOWN Logo" 
+            className="h-32 md:h-40 logo-breathe"
+          />
+        </div>
+        
         <header className="border-b border-primary/20 backdrop-blur-xl bg-background/80 sticky top-0 z-50">
           <div className="container mx-auto px-6 py-6">
-            <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-wider glow-text">
+            <h1 className="text-4xl md:text-5xl font-heading font-bold tracking-wider glow-text text-center">
               FIRST SHOWDOWN
             </h1>
-            <p className="text-sm text-muted-foreground mt-2 tracking-wide uppercase">Premium Esports Tournament</p>
+            <p className="text-sm text-muted-foreground mt-2 tracking-wide uppercase text-center">Premium Esports Tournament</p>
           </div>
         </header>
 
@@ -223,17 +249,18 @@ export default function Index() {
               <div className="glass-panel p-8">
                 <h2 className="text-3xl font-heading mb-6 glow-text">PARTICIPATING TEAMS</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {teams.map((team) => (
+                  {teams.map((team, index) => (
                     <div
                       key={team.id}
                       onClick={() => setSelectedTeam(team)}
-                      className="glass-panel glass-panel-hover p-6 cursor-pointer text-center space-y-4"
+                      className="glass-panel glass-panel-hover p-6 cursor-pointer text-center space-y-4 floating-card"
+                      style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="font-heading text-lg tracking-wider">{team.name}</div>
-                      <div className="text-6xl">{team.logo}</div>
+                      <div className="text-6xl filter drop-shadow-lg">{team.logo}</div>
                       <Badge 
                         variant={team.status === 'INVITE' ? 'default' : team.status === 'QUALIFICATION' ? 'secondary' : 'outline'}
-                        className="uppercase tracking-wider text-xs"
+                        className="uppercase tracking-wider text-xs rounded-full px-3 py-1 shadow-lg shadow-primary/20"
                       >
                         {team.status}
                       </Badge>
@@ -305,22 +332,23 @@ export default function Index() {
               <div className="glass-panel p-8">
                 <h2 className="text-3xl font-heading mb-6 glow-text">TOP PLAYERS</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {topPlayers.map((player) => (
+                  {topPlayers.map((player, index) => (
                     <div
                       key={player.id}
                       onClick={() => setSelectedPlayer(player)}
-                      className="glass-panel glass-panel-hover p-6 cursor-pointer space-y-4"
+                      className="glass-panel glass-panel-hover p-6 cursor-pointer space-y-4 floating-card"
+                      style={{ animationDelay: `${index * 0.15}s` }}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="text-5xl">{player.avatar}</div>
+                        <div className="text-5xl filter drop-shadow-lg">{player.avatar}</div>
                         <div>
                           <div className="font-heading text-xl">{player.nickname}</div>
-                          <div className="text-sm text-primary">{player.team}</div>
+                          <div className="text-sm text-primary glow-text">{player.team}</div>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {player.achievements.map((ach, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">
+                          <Badge key={i} variant="outline" className="text-xs rounded-full">
                             {ach}
                           </Badge>
                         ))}
@@ -335,15 +363,16 @@ export default function Index() {
               <div className="glass-panel p-8">
                 <h2 className="text-3xl font-heading mb-6 glow-text">TOP TEAMS</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {teams.slice(0, 8).map((team) => (
+                  {teams.slice(0, 8).map((team, index) => (
                     <div
                       key={team.id}
                       onClick={() => setSelectedTeam(team)}
-                      className="glass-panel glass-panel-hover p-6 cursor-pointer text-center space-y-4"
+                      className="glass-panel glass-panel-hover p-6 cursor-pointer text-center space-y-4 floating-card"
+                      style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="font-heading text-lg tracking-wider">{team.name}</div>
-                      <div className="text-6xl">{team.logo}</div>
-                      <Badge variant="default" className="uppercase tracking-wider text-xs">
+                      <div className="text-6xl filter drop-shadow-lg">{team.logo}</div>
+                      <Badge variant="default" className="uppercase tracking-wider text-xs rounded-full shadow-lg shadow-primary/30">
                         Top {team.id}
                       </Badge>
                     </div>
@@ -356,25 +385,25 @@ export default function Index() {
       </div>
 
       <Dialog open={!!selectedTeam} onOpenChange={() => setSelectedTeam(null)}>
-        <DialogContent className="glass-panel border-primary/30 max-w-2xl">
+        <DialogContent className="glass-panel border-primary/30 max-w-2xl backdrop-blur-3xl bg-background/90 animate-scale-in">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-4 text-3xl font-heading">
-              <span className="text-5xl">{selectedTeam?.logo}</span>
+            <DialogTitle className="flex items-center gap-4 text-3xl font-heading animate-fade-in-up">
+              <span className="text-5xl filter drop-shadow-lg">{selectedTeam?.logo}</span>
               {selectedTeam?.name}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
-            <p className="text-muted-foreground">{selectedTeam?.description}</p>
-            <div>
+            <p className="text-muted-foreground animate-fade-in-up" style={{ animationDelay: '0.1s' }}>{selectedTeam?.description}</p>
+            <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <h3 className="font-heading text-xl mb-3">PLAYERS</h3>
               <div className="flex flex-wrap gap-2">
                 {selectedTeam?.players.map((player, i) => (
-                  <Badge key={i} variant="secondary">{player}</Badge>
+                  <Badge key={i} variant="secondary" className="rounded-full">{player}</Badge>
                 ))}
               </div>
             </div>
             {selectedTeam?.results && selectedTeam.results.length > 0 && (
-              <div>
+              <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
                 <h3 className="font-heading text-xl mb-3">ACHIEVEMENTS</h3>
                 <ul className="space-y-2">
                   {selectedTeam.results.map((result, i) => (
@@ -387,7 +416,7 @@ export default function Index() {
               </div>
             )}
             {selectedTeam?.telegram && (
-              <Button asChild className="w-full glass-panel glass-panel-hover">
+              <Button asChild className="w-full glass-panel glass-panel-hover animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 <a href={selectedTeam.telegram} target="_blank" rel="noopener noreferrer">
                   <Icon name="Send" className="w-4 h-4 mr-2" />
                   Telegram Channel
@@ -399,20 +428,20 @@ export default function Index() {
       </Dialog>
 
       <Dialog open={!!selectedPlayer} onOpenChange={() => setSelectedPlayer(null)}>
-        <DialogContent className="glass-panel border-primary/30">
+        <DialogContent className="glass-panel border-primary/30 backdrop-blur-3xl bg-background/90 animate-scale-in">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-4 text-3xl font-heading">
-              <span className="text-5xl">{selectedPlayer?.avatar}</span>
+            <DialogTitle className="flex items-center gap-4 text-3xl font-heading animate-fade-in-up">
+              <span className="text-5xl filter drop-shadow-lg">{selectedPlayer?.avatar}</span>
               {selectedPlayer?.nickname}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="text-primary font-heading">{selectedPlayer?.team}</div>
-            <div>
+            <div className="text-primary font-heading glow-text animate-fade-in-up" style={{ animationDelay: '0.1s' }}>{selectedPlayer?.team}</div>
+            <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               <h3 className="font-heading text-xl mb-3">ACHIEVEMENTS</h3>
               <div className="flex flex-wrap gap-2">
                 {selectedPlayer?.achievements.map((ach, i) => (
-                  <Badge key={i} variant="outline">{ach}</Badge>
+                  <Badge key={i} variant="outline" className="rounded-full">{ach}</Badge>
                 ))}
               </div>
             </div>
@@ -421,17 +450,17 @@ export default function Index() {
       </Dialog>
 
       <Dialog open={!!selectedMatch} onOpenChange={() => setSelectedMatch(null)}>
-        <DialogContent className="glass-panel border-primary/30 max-w-4xl">
+        <DialogContent className="glass-panel border-primary/30 max-w-4xl backdrop-blur-3xl bg-background/90 animate-scale-in">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-center gap-6 text-2xl font-heading">
+            <DialogTitle className="flex items-center justify-center gap-6 text-2xl font-heading animate-fade-in-up">
               <div className="flex items-center gap-3">
-                <span className="text-4xl">{selectedMatch?.logo1}</span>
+                <span className="text-4xl filter drop-shadow-lg">{selectedMatch?.logo1}</span>
                 <span>{selectedMatch?.team1}</span>
               </div>
-              <span className="text-primary">VS</span>
+              <span className="text-primary glow-text">VS</span>
               <div className="flex items-center gap-3">
                 <span>{selectedMatch?.team2}</span>
-                <span className="text-4xl">{selectedMatch?.logo2}</span>
+                <span className="text-4xl filter drop-shadow-lg">{selectedMatch?.logo2}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
